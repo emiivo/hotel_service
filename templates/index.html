@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Service</title>
+</head>
+<body>
+    <h1>Hotel Rooms</h1>
+    <ul>
+        {% for room in rooms_data %}
+            <li>
+                <strong>Room {{ room.id }} </strong><br>
+                <strong>Room Name:</strong> {{ room.name }}<br>
+                <strong>Price:</strong> {{ room.price }}<br>
+                <strong>Size:</strong> {{ room.size }}<br>
+                <strong>Residents:</strong> 
+                <ul>
+                    {% for resident in room.residents %}
+                        <li>
+                            <strong>ID:</strong> {{ resident.id }}<br>
+                            <strong>Name:</strong> {{ resident.name }} {{ resident.surname }}<br>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
