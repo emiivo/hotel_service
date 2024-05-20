@@ -34,8 +34,10 @@ class Hotel:
 			room.lives_here.append(new_resident)
 			new_resident.occupied_room = room
 			self.residents.append(new_resident)
+			return True
 		else:
-			return False
+			raise ValueError(f'Room with ID {room_id} not found.')
+
 
 	def create_new_room(self, room_name, price, size):
 		new_room = room.Room(room_name, price, size)
@@ -60,7 +62,21 @@ class Hotel:
 			return resident.name, resident.surname
 		else:
 			return False
+			
+	def get_person_in_room(self, room_id):
+		for resident in self.residents:
+			if resident.occupied_room and resident.occupied_room.id == room_id:
+				return resident.name, resident.surname
+		return False
+        
+	def get_specific_resident_in_room(self, resident_id, room_id):
+		for resident in self.residents:
+			if resident.id == resident_id and resident.occupied_room and resident.occupied_room.id == room_id:
+				return resident.name, resident.surname
+		return None
 
+
+			
 	def update_room(self, room_id, new_name=None, new_price=None, new_size=None):
 		room = next(
 			(room for room in self.rooms if room.id == room_id),
@@ -88,17 +104,18 @@ class Hotel:
 			None
 		)
 		new_room = next(
-			(room for room in self.rooms if room.id == new_room_id),
-			None
+		(room for room in self.rooms if room.id == new_room_id),
+		None
 		)
 
-		if resident and old_room and new_room:
-			old_room.lives_here.remove(resident)  # Remove resident from old room
-			new_room.lives_here.append(resident)  # Add resident to new room
+		if resident and old_room and new_room and new_room != old_room:
+			old_room.lives_here.remove(resident) 
+			new_room.lives_here.append(resident)
 			resident.occupied_room = new_room
 			return True
 		else:
 			return False
+
 		
 	def remove_room(self, room_id):
 		# Find the room by ID
