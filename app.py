@@ -16,7 +16,7 @@ def get_residents_info():
 	for resident in hotel.residents
 	]
 
-	return jsonify({'residents': residents_data})
+	return jsonify({'residents': residents_data}), 200
 
 # Get room info
 @app.route('/rooms', methods=['GET'])
@@ -31,7 +31,7 @@ def get_rooms_info():
 	for room in hotel.rooms
 	]
 
-	return jsonify({'rooms': rooms_data})
+	return jsonify({'rooms': rooms_data}), 200
 
 # Get info of room and its residents
 @app.route('/hotel', methods=['GET'])
@@ -47,7 +47,7 @@ def get_rooms():
 				for resident in room.lives_here
 			]
 		})
-	return jsonify({'rooms': rooms})
+	return jsonify({'rooms': rooms}), 200
 
 # Get room by id
 @app.route('/rooms/<int:room_id>', methods=['GET'])
@@ -77,35 +77,30 @@ def get_resident_by_id(resident_id):
 # Add resident to a room
 @app.route('/residents', methods=['POST'])
 def add_resident():
-	data = request.json
-	name = data.get('name')
-	surname = data.get('surname')
-	room_id = data.get('room_id')
+    data = request.json
+    name = data.get('name')
+    surname = data.get('surname')
+    room_id = data.get('room_id')
 
-	# Check if the room has enough space
-	room = next((room for room in hotel.rooms if room.id == room_id), None)
-	if room:
-		if len(room.lives_here) >= room.size:
-			return jsonify({'error': 'Room is already full.'}), 422
+    # Check if the room has enough space
+    room = next((room for room in hotel.rooms if room.id == room_id), None)
+    if room:
+        if len(room.lives_here) >= room.size:
+            return jsonify({'error': 'Room is already full.'}), 422
 
-		# Call method to add resident
-		try:
-			success = hotel.move_in_new_resident(name, surname, room_id)
-			# Construct response with added resident information
-			response_data = {
-				'resident': {
-					'name': name,
-					'surname': surname,
-					'room_id': room_id
-				},
-				'message': 'Resident added to room successfully'
-			}
-			return jsonify(response_data), 201
-		except ValueError as e:
-			return jsonify({'error': str(e)}), 404
-    
-	else:
-		return jsonify({'error': f'Room with ID {room_id} not found'}), 404
+        # Call method to add resident
+        try:
+            resident_id = hotel.move_in_new_resident(name, surname, room_id)
+
+            response_data = {
+                'message': f'Resident {resident_id} added to room {room_id} successfully'
+            }
+            return jsonify(response_data), 201
+        except ValueError as e:
+            return jsonify({'error': str(e)}), 404
+
+    else:
+        return jsonify({'error': f'Room with ID {room_id} not found'}), 404
 
 # Create a new room
 @app.route('/rooms', methods=['POST'])
@@ -115,9 +110,16 @@ def add_room():
 	price = data.get('price')
 	size = data.get('size')
 
-	hotel.create_new_room(room_name, price, size)
+	new_room = hotel.create_new_room(room_name, price, size)
 
-	return jsonify({'message': 'New room added'})
+	room_id = new_room.id
+	message = 'Room added successfully'
+        
+	response_data = {
+		'room_id': new_room.id,
+		'message': message
+	}
+	return jsonify(response_data), 201
 	
 # Update a room's information
 @app.route('/rooms/<int:room_id>', methods=['PUT'])

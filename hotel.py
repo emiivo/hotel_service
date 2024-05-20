@@ -20,7 +20,7 @@ class Hotel:
 		self.move_in_new_resident(name="Don", surname="Jones", room_id=2)
 
 	def move_in_new_resident(self, name, surname, room_id):
-		# Create a new resident
+
 		new_resident = resident.Resident(name, surname)
 
 		# Find the room by ID
@@ -29,19 +29,25 @@ class Hotel:
 			None
 		)
 
-		# If the room exists, add the new resident to it
 		if room:
 			room.lives_here.append(new_resident)
 			new_resident.occupied_room = room
 			self.residents.append(new_resident)
-			return True
+			return new_resident.id 
 		else:
 			raise ValueError(f'Room with ID {room_id} not found.')
 
 
+		def create_new_room(self, room_name, price, size):
+			new_room = room.Room(room_name, price, size)
+			self.rooms.append(new_room)
+			return new_room
+		
+
 	def create_new_room(self, room_name, price, size):
 		new_room = room.Room(room_name, price, size)
 		self.rooms.append(new_room)
+		return new_room
 
 	def get_room_name_by_id(self, id):
 		room = next(
