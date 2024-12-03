@@ -1,5 +1,8 @@
 # Hotel
 
+A simple hotel service that uses Docker.
+Written in Python.
+
 # Usage:
 
 Launch:
